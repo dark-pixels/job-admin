@@ -11,7 +11,7 @@ export default function JobModal({ onClose }) {
 
   const submitForm = async (data) => {
     try {
-      await fetch('http://job-backend-nine.vercel.app/api/jobs', {
+      await fetch('https://job-backend-nine.vercel.app/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
