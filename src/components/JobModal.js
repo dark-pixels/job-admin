@@ -1,6 +1,12 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 
+// ✅ Dynamically set backend URL
+const BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000'
+    : 'https://job-backend-nine.vercel.app';
+
 export default function JobModal({ onClose }) {
   const {
     register,
@@ -11,7 +17,6 @@ export default function JobModal({ onClose }) {
 
   const submitForm = async (data) => {
     try {
-      // Convert salaryMin and salaryMax to numbers
       const salaryMin = parseInt(data.salaryMin?.replace(/\D/g, '') || '0');
       const salaryMax = parseInt(data.salaryMax?.replace(/\D/g, '') || '0');
       const salary = Math.round((salaryMin + salaryMax) / 2);
@@ -28,11 +33,15 @@ export default function JobModal({ onClose }) {
         isDraft: data.isDraft || false,
       };
 
-      await fetch('https://job-backend-nine.vercel.app/api/jobs', {
+      const response = await fetch(`${BASE_URL}/api/jobs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
 
       onClose();
     } catch (err) {
