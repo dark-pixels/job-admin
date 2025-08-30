@@ -4,6 +4,13 @@ import JobFilters from './components/JobFilters';
 import JobList from './pages/JobList';
 import JobModal from './components/JobModal';
 
+
+// ✅ Dynamically set backend URL based on environment
+const BASE_URL =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:5000'
+    : 'https://job-backend-nine.vercel.app';
+
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [jobs, setJobs] = useState([]);
@@ -25,7 +32,7 @@ function App() {
         maxSalary: Math.round(filters.maxSalary),
       }).toString();
 
-      const res = await fetch(`https://job-backend-nine.vercel.app/api/jobs?${query}`);
+      const res = await fetch(`${BASE_URL}/api/jobs?${query}`);
       const data = await res.json();
       setJobs(Array.isArray(data) ? data : []);
     } catch (err) {
