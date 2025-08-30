@@ -12,7 +12,7 @@ function App() {
   const fetchJobs = async () => {
     try {
       const query = new URLSearchParams(filters).toString();
-      const res = await fetch(`http://localhost:5000/api/jobs?${query}`);
+      const res = await fetch(`http://job-backend-nine.vercel.app/api/jobs?${query}`);
       const data = await res.json();
       setJobs(Array.isArray(data) ? data : data.jobs || []);
     } catch (err) {
