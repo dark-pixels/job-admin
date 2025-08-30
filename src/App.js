@@ -7,14 +7,27 @@ import JobModal from './components/JobModal';
 function App() {
   const [showModal, setShowModal] = useState(false);
   const [jobs, setJobs] = useState([]);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    search: '',
+    location: '',
+    type: '',
+    minSalary: 30,
+    maxSalary: 80,
+  });
 
   const fetchJobs = async () => {
     try {
-      const query = new URLSearchParams(filters).toString();
+      const query = new URLSearchParams({
+        search: filters.search,
+        location: filters.location,
+        type: filters.type,
+        minSalary: Math.round(filters.minSalary),
+        maxSalary: Math.round(filters.maxSalary),
+      }).toString();
+
       const res = await fetch(`https://job-backend-nine.vercel.app/api/jobs?${query}`);
       const data = await res.json();
-      setJobs(Array.isArray(data) ? data : data.jobs || []);
+      setJobs(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error fetching jobs:', err);
       setJobs([]);
@@ -23,20 +36,21 @@ function App() {
 
   useEffect(() => {
     fetchJobs();
-  }, [filters]); // ✅ only runs when filters change
+  }, [filters]);
 
   return (
     <div className="bg-gray-100 min-h-screen px-6 py-8 font-sans">
       <Header onCreate={() => setShowModal(true)} />
-      <JobFilters
-        onSearch={(query) => setFilters({ ...filters, title: query })}
-        onFilterChange={(key, value) => setFilters({ ...filters, [key]: value })}
-      />
+      <JobFilters filters={filters} setFilters={setFilters} onFilter={fetchJobs} />
       <JobList jobs={jobs} />
-      {showModal && <JobModal onClose={() => {
-        setShowModal(false);
-        fetchJobs(); // ✅ refresh jobs after modal closes
-      }} />}
+      {showModal && (
+        <JobModal
+          onClose={() => {
+            setShowModal(false);
+            fetchJobs();
+          }}
+        />
+      )}
     </div>
   );
 }

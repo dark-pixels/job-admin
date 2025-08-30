@@ -11,11 +11,29 @@ export default function JobModal({ onClose }) {
 
   const submitForm = async (data) => {
     try {
+      // Convert salaryMin and salaryMax to numbers
+      const salaryMin = parseInt(data.salaryMin?.replace(/\D/g, '') || '0');
+      const salaryMax = parseInt(data.salaryMax?.replace(/\D/g, '') || '0');
+      const salary = Math.round((salaryMin + salaryMax) / 2);
+
+      const payload = {
+        title: data.title,
+        company: data.company,
+        location: data.location,
+        type: data.type,
+        salary,
+        experience: data.experience,
+        deadline: data.deadline,
+        description: data.description,
+        isDraft: data.isDraft || false,
+      };
+
       await fetch('https://job-backend-nine.vercel.app/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
+
       onClose();
     } catch (err) {
       console.error('Error submitting job:', err);
