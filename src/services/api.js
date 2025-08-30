@@ -2,7 +2,7 @@
 const BASE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000'
-    : 'https://job-backend-nine.vercel.app';
+    : 'https://job-backend-4ckc.onrender.com';
 
 export const fetchJobs = async () => {
   try {

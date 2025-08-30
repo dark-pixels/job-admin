@@ -9,7 +9,7 @@ import JobModal from './components/JobModal';
 const BASE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000'
-    : 'https://job-backend-nine.vercel.app';
+    : 'https://job-backend-4ckc.onrender.com';
 
 function App() {
   const [showModal, setShowModal] = useState(false);
