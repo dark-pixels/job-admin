@@ -17,7 +17,7 @@ function App() {
     location: '',
     type: '',
     minSalary: 0,
-    maxSalary: 100,
+    maxSalary:  100,
   });
 
   const fetchJobs = async () => {
@@ -39,20 +39,25 @@ function App() {
     }
   };
 
+  // ✅ Automatically fetch jobs when filters change
   useEffect(() => {
-    fetchJobs();
+    const timeout = setTimeout(() => {
+      fetchJobs();
+    }, 300); // debounce to avoid rapid calls
+
+    return () => clearTimeout(timeout);
   }, [filters]);
 
   return (
     <div className="bg-gray-100 min-h-screen px-6 py-8 font-sans">
       <Header onCreate={() => setShowModal(true)} />
-      <JobFilters filters={filters} setFilters={setFilters} onFilter={fetchJobs} />
+      <JobFilters filters={filters} setFilters={setFilters} />
       <JobList jobs={jobs} />
       {showModal && (
         <JobModal
           onClose={() => {
             setShowModal(false);
-            fetchJobs(); // Refresh job list
+            fetchJobs(); // refresh after job creation
           }}
         />
       )}

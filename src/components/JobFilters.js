@@ -14,7 +14,7 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
         if (type === 'min') {
           updated.minSalary = Math.min(Math.max(0, percent), prev.maxSalary - 5);
         } else {
-          updated.maxSalary = Math.max(Math.min(100, percent), prev.minSalary + 5);
+          updated.maxSalary = Math.max(Math.min( 100, percent), prev.minSalary + 5);
         }
         return updated;
       });
@@ -23,7 +23,7 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
     const up = () => {
       document.removeEventListener('mousemove', move);
       document.removeEventListener('mouseup', up);
-      onFilter();
+       
     };
 
     document.addEventListener('mousemove', move);
@@ -31,7 +31,7 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
   };
 
   useEffect(() => {
-    onFilter();
+     
   }, []);
 
   return (
@@ -61,7 +61,7 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
             placeholder="Search by Job Title, Role..."
             value={filters.search}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-            onBlur={onFilter}
+            onBlur={() => {}}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
@@ -87,7 +87,7 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
             value={filters.location}
             onChange={(e) => {
               setFilters(prev => ({ ...prev, location: e.target.value }));
-              onFilter();
+               
             }}
             className="border border-gray-300 px-3 py-2 text-sm rounded-md text-gray-700 focus:outline-none w-full"
           >
@@ -121,7 +121,7 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
             value={filters.type}
             onChange={(e) => {
               setFilters(prev => ({ ...prev, type: e.target.value }));
-              onFilter();
+               
             }}
             className="border border-gray-300 px-3 py-2 text-sm rounded-md text-gray-700 focus:outline-none w-full"
           >
