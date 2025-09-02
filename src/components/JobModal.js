@@ -10,22 +10,23 @@ export default function JobModal({ onClose }) {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
   const [logoFile, setLogoFile] = useState(null);
 
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
   const submitForm = async (data) => {
     try {
       const salaryMin = parseInt(data.salaryMin?.replace(/\D/g, '') || '0');
       const salaryMax = parseInt(data.salaryMax?.replace(/\D/g, '') || '0');
       const salary = Math.round((salaryMin + salaryMax) / 2);
 
-      let logoPath = null;
+      let logoBase64 = null;
       if (logoFile) {
-        const formData = new FormData();
-        formData.append('logo', logoFile);
-        const uploadRes = await fetch(`${BASE_URL}/api/upload-logo`, {
-          method: 'POST',
-          body: formData,
-        });
-        const uploadData = await uploadRes.json();
-        logoPath = uploadData.path;
+        logoBase64 = await toBase64(logoFile);
       }
 
       const payload = {
@@ -38,7 +39,7 @@ export default function JobModal({ onClose }) {
         deadline: data.deadline,
         description: data.description,
         isDraft: data.isDraft || false,
-        logoPath,
+        logoBase64,
       };
 
       const response = await fetch(`${BASE_URL}/api/jobs`, {
@@ -67,13 +68,11 @@ export default function JobModal({ onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-screen overflow-y-auto p-8">
-        {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">Create Job Opening</h2>
           <button onClick={onClose} className="text-gray-500 text-2xl font-bold hover:text-red-500">&times;</button>
         </div>
 
-        {/* Form */}
         <form className="space-y-6">
           <input type="hidden" {...register('isDraft')} />
 

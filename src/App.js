@@ -17,7 +17,7 @@ function App() {
     location: '',
     type: '',
     minSalary: 0,
-    maxSalary: 100,
+    maxSalary: 1000,
   });
 
   const fetchJobs = async () => {
@@ -26,8 +26,8 @@ function App() {
         search: filters.search,
         location: filters.location,
         type: filters.type,
-        minSalary: Math.round(filters.minSalary),
-        maxSalary: Math.round(filters.maxSalary),
+        minSalary: filters.minSalary,
+        maxSalary: filters.maxSalary,
       }).toString();
 
       const res = await fetch(`${BASE_URL}/api/jobs?${query}`);
@@ -52,7 +52,7 @@ function App() {
         <JobModal
           onClose={() => {
             setShowModal(false);
-            fetchJobs(); // Refresh job list after modal closes
+            fetchJobs(); // Refresh job list
           }}
         />
       )}
