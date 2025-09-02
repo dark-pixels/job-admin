@@ -17,7 +17,7 @@ function App() {
     location: '',
     type: '',
     minSalary: 0,
-    maxSalary: 1000,
+    maxSalary: 100,
   });
 
   const fetchJobs = async () => {
