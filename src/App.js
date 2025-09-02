@@ -4,8 +4,6 @@ import JobFilters from './components/JobFilters';
 import JobList from './pages/JobList';
 import JobModal from './components/JobModal';
 
-
-// ✅ Dynamically set backend URL based on environment
 const BASE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000'
@@ -18,8 +16,8 @@ function App() {
     search: '',
     location: '',
     type: '',
-    minSalary: 30,
-    maxSalary: 80,
+    minSalary: 0,
+    maxSalary: 100,
   });
 
   const fetchJobs = async () => {
@@ -54,7 +52,7 @@ function App() {
         <JobModal
           onClose={() => {
             setShowModal(false);
-            fetchJobs();
+            fetchJobs(); // Refresh job list after modal closes
           }}
         />
       )}

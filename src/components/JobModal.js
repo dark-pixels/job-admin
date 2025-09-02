@@ -1,25 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-// ✅ Dynamically set backend URL
 const BASE_URL =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:5000'
     : 'https://job-backend-4ckc.onrender.com';
 
 export default function JobModal({ onClose }) {
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const [logoFile, setLogoFile] = useState(null);
 
   const submitForm = async (data) => {
     try {
       const salaryMin = parseInt(data.salaryMin?.replace(/\D/g, '') || '0');
       const salaryMax = parseInt(data.salaryMax?.replace(/\D/g, '') || '0');
       const salary = Math.round((salaryMin + salaryMax) / 2);
+
+      let logoPath = null;
+      if (logoFile) {
+        const formData = new FormData();
+        formData.append('logo', logoFile);
+        const uploadRes = await fetch(`${BASE_URL}/api/upload-logo`, {
+          method: 'POST',
+          body: formData,
+        });
+        const uploadData = await uploadRes.json();
+        logoPath = uploadData.path;
+      }
 
       const payload = {
         title: data.title,
@@ -31,6 +38,7 @@ export default function JobModal({ onClose }) {
         deadline: data.deadline,
         description: data.description,
         isDraft: data.isDraft || false,
+        logoPath,
       };
 
       const response = await fetch(`${BASE_URL}/api/jobs`, {
@@ -39,10 +47,7 @@ export default function JobModal({ onClose }) {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-
+      if (!response.ok) throw new Error(`Server responded with ${response.status}`);
       onClose();
     } catch (err) {
       console.error('Error submitting job:', err);
@@ -61,7 +66,7 @@ export default function JobModal({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-8">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-screen overflow-y-auto p-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">Create Job Opening</h2>
@@ -174,8 +179,19 @@ export default function JobModal({ onClose }) {
             />
           </div>
 
+          {/* Logo Upload */}
+          <div className="mb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Company Logo</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setLogoFile(e.target.files[0])}
+              className="w-full border border-gray-300 rounded-md px-4 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           {/* Buttons */}
-          <div className="flex justify-end gap-4 pt-6">
+          <div className="flex justify-end gap-4 pt-2">
             <button
               type="button"
               onClick={handleDraft}

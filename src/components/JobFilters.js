@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 export default function JobFilters({ filters, setFilters, onFilter }) {
   const sliderRef = useRef(null);
@@ -9,17 +9,15 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
       const rect = slider.getBoundingClientRect();
       const percent = ((e.clientX - rect.left) / rect.width) * 100;
 
-      if (type === 'min') {
-        setFilters(prev => ({
-          ...prev,
-          minSalary: Math.min(Math.max(0, percent), prev.maxSalary - 5),
-        }));
-      } else {
-        setFilters(prev => ({
-          ...prev,
-          maxSalary: Math.max(Math.min(100, percent), prev.minSalary + 5),
-        }));
-      }
+      setFilters(prev => {
+        const updated = { ...prev };
+        if (type === 'min') {
+          updated.minSalary = Math.min(Math.max(0, percent), prev.maxSalary - 5);
+        } else {
+          updated.maxSalary = Math.max(Math.min(100, percent), prev.minSalary + 5);
+        }
+        return updated;
+      });
     };
 
     const up = () => {
@@ -41,6 +39,7 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between divide-x divide-gray-300">
         {/* Search */}
         <div className="relative flex-1 min-w-[200px] pr-6">
+          {/* 🔍 Paste SearchIcon SVG here */}
           <svg
   className="absolute left-3 top-1/2 transform -translate-y-1/2"
   width="20"
@@ -61,20 +60,19 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
             type="text"
             placeholder="Search by Job Title, Role..."
             value={filters.search}
-            onChange={(e) => {
-              setFilters(prev => ({ ...prev, search: e.target.value }));
-              onFilter();
-            }}
+            onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+            onBlur={onFilter}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
         {/* Location */}
         <div className="flex items-center flex-1 min-w-[200px] px-6">
+          {/* 📍 Paste LocationIcon SVG here */}
           <svg
   className="mr-2"
-  width="20"
-  height="35"
+  width="30"
+  height="40"
   viewBox="0 0 18 23"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
@@ -102,7 +100,14 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
 
         {/* Job Type */}
         <div className="flex items-center flex-1 min-w-[200px] px-6">
-          <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          {/* 💼 Paste JobTypeIcon SVG here */}
+          <svg
+  width="20"
+  height="18"
+  viewBox="0 0 20 18"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
   <path
     d="M13 17C13 14.7909 10.3137 13 7 13C3.68629 13 1 14.7909 1 17M14.8281 3.17188C15.1996 3.54331 15.4942 3.98427 15.6952 4.46957C15.8962 4.95487 15.9999 5.47533 15.9999 6.00062C15.9999 6.52591 15.8963 7.04497 15.6953 7.53027C15.4943 8.01558 15.1996 8.45705 14.8281 8.82848M17 1C17.6566 1.65661 18.1775 2.43612 18.5328 3.29402C18.8882 4.15192 19.0718 5.07127 19.0718 5.99985C19.0718 6.92844 18.8886 7.84815 18.5332 8.70605C18.1778 9.56396 17.6566 10.3435 17 11.0001M7 10C4.79086 10 3 8.20914 3 6C3 3.79086 4.79086 2 7 2C9.20914 2 11 3.79086 11 6C11 8.20914 9.20914 10 7 10Z"
     stroke="#686868"
@@ -132,7 +137,9 @@ export default function JobFilters({ filters, setFilters, onFilter }) {
         <div className="flex flex-col flex-1 min-w-[200px] pl-6">
           <div className="flex justify-between items-center mb-1">
             <span className="text-sm text-gray-500">Salary Per Month</span>
-            <span className="text-sm text-gray-500">₹{Math.round(filters.minSalary)}K - ₹{Math.round(filters.maxSalary)}K</span>
+            <span className="text-sm text-gray-500">
+              ₹{Math.round(filters.minSalary)}K - ₹{Math.round(filters.maxSalary)}K
+            </span>
           </div>
           <div ref={sliderRef} className="relative w-full h-1 bg-gray-800 rounded cursor-pointer">
             <div
